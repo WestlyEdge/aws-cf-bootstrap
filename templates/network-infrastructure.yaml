@@ -120,24 +120,24 @@ Resources:
       VpcId:
         Ref: MainVpc
       SecurityGroupIngress:
-      - IpProtocol: tcp #http
+      - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
         CidrIp: 10.0.2.0/24
-      - IpProtocol: tcp #https
+      - IpProtocol: tcp
         FromPort: 443
         ToPort: 443
         CidrIp: 10.0.2.0/24
-      - IpProtocol: tcp #ssh
+      - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
         CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
-      - IpProtocol: tcp #http
+      - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp #https
+      - IpProtocol: tcp
         FromPort: 443
         ToPort: 443
         CidrIp: 0.0.0.0/0
@@ -146,22 +146,10 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: MainInternetGateway
     Properties:
-      #AdditionalInfo:
-      #Affinity:
       AvailabilityZone: us-east-1a
-      #BlockDeviceMappings:
-      #DisableApiTermination: false
-      #EbsOptimized: false
-      #HostId:
-      #IamInstanceProfile:
       ImageId: ami-258e1f33
-      #InstanceInitiatedShutdownBehavior: stop
       InstanceType: t2.micro
-      #Ipv6AddressCount:
-      #Ipv6Addresses:
-      #KernelId:
       KeyName: aws-wes-kp
-      #Monitoring: false
       NetworkInterfaces:
       - AssociatePublicIpAddress: true
         DeleteOnTermination: true
@@ -169,25 +157,10 @@ Resources:
         DeviceIndex: 0
         GroupSet:
           - Ref: NATSecurityGroup
-        #NetworkInterfaceId:
-        #Ipv6AddressCount:
-        #Ipv6Addresses:
-        #PrivateIpAddress:
-        #PrivateIpAddresses:
-        #SecondaryPrivateIpAddressCount:
         SubnetId:
           Ref: PublicSubnet
-      #PlacementGroupName:
-      #PrivateIpAddress:
-      #RamdiskId:
-      #SecurityGroupIds:
-      #SecurityGroups:  (not used when specified in a network interface)
       SourceDestCheck: false
-      #SsmAssociations:
-      #SubnetId:  (not used when specified in a network interface)
       Tags:
       - Key: Name
         Value: nat
       Tenancy: default
-      #UserData:
-      #Volumes:
