@@ -1,0 +1,193 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+
+  #------------------------------
+  # base network infrastructure
+  #------------------------------
+
+  MainVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsSupport: false
+      EnableDnsHostnames: false
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: vpc-main
+
+  MainInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: main-internet-gateway
+
+  MainInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: MainVpc
+      InternetGatewayId:
+        Ref: MainInternetGateway
+
+  #----------------
+  # public subnet
+  #----------------
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: MainVpc
+      CidrBlock: 10.1.1.0/24
+      AvailabilityZone: us-east-1a
+      Tags:
+      - Key: Name
+        Value: public-subnet
+
+  PublicSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: MainVpc
+      Tags:
+      - Key: Name
+        Value: rt-public
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PublicSubnet
+      RouteTableId:
+        Ref: PublicSubnetRouteTable
+
+  PublicSubnetInternetGatewayRoute:
+    Type: AWS::EC2::Route
+    DependsOn: MainInternetGateway
+    Properties:
+      RouteTableId:
+        Ref: PublicSubnetRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: MainInternetGateway
+
+  #----------------
+  # private subnet
+  #----------------
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: MainVpc
+      CidrBlock: 10.1.2.0/24
+      AvailabilityZone: us-east-1a
+      Tags:
+      - Key: Name
+        Value: private-subnet
+
+  PrivateSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: MainVpc
+      Tags:
+      - Key: Name
+        Value: rt-private
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PrivateSubnet
+      RouteTableId:
+        Ref: PrivateSubnetRouteTable
+
+  #------
+  # nat
+  #------
+
+  NATSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: NATSG
+      GroupDescription: sg for nat in public subnet
+      Tags:
+      - Key: Name
+        Value: sg-nat
+      VpcId:
+        Ref: MainVpc
+      SecurityGroupIngress:
+      - IpProtocol: tcp #http
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 10.0.2.0/24
+      - IpProtocol: tcp #https
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 10.0.2.0/24
+      - IpProtocol: tcp #ssh
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp #http
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp #https
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+
+  NATInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: MainInternetGateway
+    Properties:
+      #AdditionalInfo:
+      #Affinity:
+      AvailabilityZone: us-east-1a
+      #BlockDeviceMappings:
+      #DisableApiTermination: false
+      #EbsOptimized: false
+      #HostId:
+      #IamInstanceProfile:
+      ImageId: ami-258e1f33
+      #InstanceInitiatedShutdownBehavior: stop
+      InstanceType: t2.micro
+      #Ipv6AddressCount:
+      #Ipv6Addresses:
+      #KernelId:
+      KeyName: aws-wes-kp
+      #Monitoring: false
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeleteOnTermination: true
+        Description: nat public ip network interface
+        DeviceIndex: 0
+        GroupSet:
+          - Ref: NATSecurityGroup
+        #NetworkInterfaceId:
+        #Ipv6AddressCount:
+        #Ipv6Addresses:
+        #PrivateIpAddress:
+        #PrivateIpAddresses:
+        #SecondaryPrivateIpAddressCount:
+        SubnetId:
+          Ref: PublicSubnet
+      #PlacementGroupName:
+      #PrivateIpAddress:
+      #RamdiskId:
+      #SecurityGroupIds:
+      #SecurityGroups:  (not used when specified in a network interface)
+      SourceDestCheck: false
+      #SsmAssociations:
+      #SubnetId:  (not used when specified in a network interface)
+      Tags:
+      - Key: Name
+        Value: nat
+      Tenancy: default
+      #UserData:
+      #Volumes:
