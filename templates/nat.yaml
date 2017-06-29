@@ -1,4 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+  ImageId:
+    Type: AWS::EC2::Image::Id
+  InstanceType:
+    Type: String
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+
 Resources:
 
   NATSecurityGroup:
@@ -14,11 +26,11 @@ Resources:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        CidrIp: 10.0.2.0/24
+        CidrIp: !ImportValue "base-network-infra-PrivateSubnetCidrBlock"
       - IpProtocol: tcp
         FromPort: 443
         ToPort: 443
-        CidrIp: 10.0.2.0/24
+        CidrIp: !ImportValue "base-network-infra-PrivateSubnetCidrBlock"
       - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
@@ -36,10 +48,14 @@ Resources:
   NATInstance:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: us-east-1a
-      ImageId: ami-258e1f33
-      InstanceType: t2.micro
-      KeyName: aws-wes-kp
+      AvailabilityZone:
+        Ref: AvailabilityZone
+      ImageId:
+        Ref: ImageId
+      InstanceType:
+        Ref: InstanceType
+      KeyName:
+        Ref: KeyName
       NetworkInterfaces:
       - AssociatePublicIpAddress: true
         DeleteOnTermination: true
