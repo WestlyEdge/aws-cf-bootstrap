@@ -13,14 +13,37 @@ function main {
 
     aws iam list-account-aliases
 
-    # plan for all stacks
-    planStack base-network-infra
-    planStack nat
+    getRunList
+    planStacks
 
     highlightEcho "\n--------------------------------------\n"
     highlightEcho "---- cloudformation plan complete ----\n"
     highlightEcho "--------------------------------------\n\n"
     highlightEcho "* run cf-apply.sh to apply these changes\n\n"
+}
+
+function getRunList {
+    local runListIndex=0;
+
+    IFS=$'\n' read -d '' -r -a lines < ../../run-list.txt
+
+    for i in "${lines[@]}"
+    do
+        if [[ "$i" != "#"* ]]; then
+            runList[runListIndex]=$i
+            runListIndex=$((runListIndex+1))
+        fi
+    done
+}
+
+function planStacks {
+
+    # plan for all stacks
+    for i in "${runList[@]}"
+    do
+        local stackName=$i
+        planStack "$stackName"
+    done
 }
 
 function planStack {
@@ -36,12 +59,6 @@ function planStack {
     if [[ "$changeSetType" = "$CREATE" ]]; then
         deleteStack
     fi
-}
-
-function deleteStack {
-    printf "\n"
-    execute "aws cloudformation delete-stack --stack-name $stackName" true
-    printf "cleanup complete... temporary new stack '%s' has been deleted\n" $stackName
 }
 
 function getChangeSetType {
@@ -63,7 +80,7 @@ function getChangeSetType {
 }
 
 function createChangeSet {
-    execute "aws cloudformation create-change-set --change-set-type $changeSetType --template-body file://../templates/$stackName.yaml --stack-name $stackName --parameters file://params/$stackName.json --change-set-name $changeSetName" true false
+    execute "aws cloudformation create-change-set --change-set-type $changeSetType --template-body file://../../templates/$stackName.yaml --stack-name $stackName --parameters file://params/$stackName.json --change-set-name $changeSetName" true false
 }
 
 function describeChangeSet {
@@ -83,6 +100,12 @@ function describeChangeSet {
     execute "aws cloudformation describe-change-set --stack-name $stackName --change-set-name $changeSetName" false false
 
     endImportantText
+}
+
+function deleteStack {
+    printf "\n"
+    execute "aws cloudformation delete-stack --stack-name $stackName" true
+    printf "cleanup complete... temporary new stack '%s' has been deleted\n" $stackName
 }
 
 function execute {
