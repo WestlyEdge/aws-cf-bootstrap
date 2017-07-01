@@ -1,0 +1,3 @@
+ImageId=ami-258e1f33
+InstanceType=t2.micro
+KeyName=aws-wes-kp

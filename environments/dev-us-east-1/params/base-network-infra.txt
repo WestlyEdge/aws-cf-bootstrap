@@ -1,0 +1,3 @@
+MainVpcCidrBlock=10.1.0.0/16
+PublicSubnetCidrBlock=10.1.1.0/24
+PrivateSubnetCidrBlock=10.1.2.0/24

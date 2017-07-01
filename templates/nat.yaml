@@ -2,8 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  AvailabilityZone:
-    Type: AWS::EC2::AvailabilityZone::Name
   ImageId:
     Type: AWS::EC2::Image::Id
   InstanceType:
@@ -48,8 +46,6 @@ Resources:
   NATInstance:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone:
-        Ref: AvailabilityZone
       ImageId:
         Ref: ImageId
       InstanceType:
