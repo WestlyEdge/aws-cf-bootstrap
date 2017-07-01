@@ -70,7 +70,7 @@ function execute {
 
     if [ "$printCommand" = true ]; then
         newline
-        echo "+ $command"
+        echo "+ "$command
     fi
 
     if [ "$showWait" = true ]; then
@@ -147,7 +147,7 @@ function deployNoExecute {
     else
 
         # split the response string to get the describe-change-set url
-        command="${response##*changes:}"
+        command=${response##*changes:}
 
         # execute the describe-change-set command to retrieve the changeset info
         execute "$command" true false true
