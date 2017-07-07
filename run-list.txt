@@ -1,6 +1,6 @@
 # list one stack name on each line
 # a [stack name].yaml file must exist in the templates directory
-# templates will be applied in the order they are listed here
+# templates will be applied in the order they are listed
 
 base-network-infra
 nat
