@@ -17,9 +17,9 @@ You might fork aws-cf-bootstrap if you are looking to quickly start writing clou
 
 ## Dependencies
 
-1) You'll need <a href="https://direnv.net/">direnv</a>, it's a shell extension that loads different environment variables depending on your path, aws-cf-bootstrap uses direnv to target the correct aws access keys per environment. You'll place a .envrc file in each environment directory (never commit .envrc files to git, a [.gitignore](.gitignore) entry already exists). For more insight, look at [environments/dev-us-east-1/envrc](environments/dev-us-east-1/envrc).
+1) aws-cf-bootstrap uses the <a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">AWS Command Line Interface</a> to send cloud formation commands, so you'll need that.
 
-2) aws-cf-bootstrap uses the <a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">AWS Command Line Interface</a> to send cloud formation commands, so you'll need that too.
+2) You'll also need <a href="https://direnv.net/">direnv</a>, it's a shell extension that loads different environment variables depending on your path, aws-cf-bootstrap uses direnv to target the correct aws access keys per environment. You'll place a .envrc file in each environment directory (never commit .envrc files to git, a [.gitignore](.gitignore) entry already exists). For more insight, look at [environments/dev-us-east-1/envrc](environments/dev-us-east-1/envrc).
 
 ## Contributors
 
