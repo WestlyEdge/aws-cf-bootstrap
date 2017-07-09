@@ -11,7 +11,6 @@ You might fork aws-cf-bootstrap if you are looking to quickly start writing clou
       - if "foo.yaml" requires params, you will provide them @ [environments/dev-us-east-1/params/](environments/dev-us-east-1/params/)foo.txt
       - run [environments/dev-us-east-1/cf-plan.sh](environments/dev-us-east-1/cf-plan.sh) to view the changes you are about to submit
       - run [environments/dev-us-east-1/cf-apply.sh](environments/dev-us-east-1/cf-apply.sh) to apply the changes to your dev environment
-      - FYI : scripts exist in the [scripts](scripts) directory, but you'll never run them there, they are symlinked
       
 2) aws-cf-bootstrap may be used to quickly provision a clean aws environment with some minimal network infrastructure. 2 stack templates exist with the provided project. Forking this project and running [environments/dev-us-east-1/cf-apply.sh](environments/dev-us-east-1/cf-apply.sh) will create a new VPC with a private subnet and a public subnet containing a nat. You'll modify input param values at [environments/dev-us-east-1/params](environments/dev-us-east-1/params).
 
